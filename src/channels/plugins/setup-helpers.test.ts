@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { OpenClawConfig } from "../../config/config.js";
 import { DEFAULT_ACCOUNT_ID } from "../../routing/session-key.js";
-import { applySetupAccountConfigPatch } from "./setup-helpers.js";
+import {
+  applySetupAccountConfigPatch,
+  moveSingleAccountChannelSectionToDefaultAccount,
+} from "./setup-helpers.js";
 
 function asConfig(value: unknown): OpenClawConfig {
   return value as OpenClawConfig;
@@ -77,5 +80,42 @@ describe("applySetupAccountConfigPatch", () => {
         "work-team": { enabled: true, botToken: "work-token" },
       },
     });
+  });
+});
+
+describe("moveSingleAccountChannelSectionToDefaultAccount", () => {
+  it("promotes legacy Matrix keys into the sole named account when defaultAccount is unset", () => {
+    const next = moveSingleAccountChannelSectionToDefaultAccount({
+      cfg: asConfig({
+        channels: {
+          matrix: {
+            homeserver: "https://matrix.example.org",
+            userId: "@bot:example.org",
+            accessToken: "token",
+            accounts: {
+              main: {
+                enabled: true,
+              },
+            },
+          },
+        },
+      }),
+      channelKey: "matrix",
+    });
+
+    expect(next.channels?.matrix).toMatchObject({
+      accounts: {
+        main: {
+          enabled: true,
+          homeserver: "https://matrix.example.org",
+          userId: "@bot:example.org",
+          accessToken: "token",
+        },
+      },
+    });
+    expect(next.channels?.matrix?.accounts?.default).toBeUndefined();
+    expect(next.channels?.matrix?.homeserver).toBeUndefined();
+    expect(next.channels?.matrix?.userId).toBeUndefined();
+    expect(next.channels?.matrix?.accessToken).toBeUndefined();
   });
 });

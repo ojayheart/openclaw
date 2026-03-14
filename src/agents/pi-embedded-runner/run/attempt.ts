@@ -1772,10 +1772,9 @@ export async function runEmbeddedAttempt(
         activeSession.agent.streamFn = cacheTrace.wrapStreamFn(activeSession.agent.streamFn);
       }
 
-      // Copilot/Claude can reject persisted `thinking` blocks on replay, but
-      // Anthropic also requires the latest assistant turn to stay byte-for-byte
-      // stable. Strip older replayed thinking blocks while preserving the most
-      // recent assistant message for every outbound request.
+      // Copilot/Claude can reject persisted `thinking` blocks on replay.
+      // Anthropic is the special case: it requires the latest assistant turn
+      // with thinking to stay byte-for-byte stable.
       if (transcriptPolicy.dropThinkingBlocks) {
         const inner = activeSession.agent.streamFn;
         activeSession.agent.streamFn = (model, context, options) => {
@@ -1787,7 +1786,6 @@ export async function runEmbeddedAttempt(
           const sanitized = dropThinkingBlocks(messages as unknown as AgentMessage[], {
             preserveLatestAssistantWithThinking:
               transcriptPolicy.preserveLatestAssistantWithThinking,
-            preserveLatestAssistant: !transcriptPolicy.preserveLatestAssistantWithThinking,
           }) as unknown;
           if (sanitized === messages) {
             return inner(model, context, options);

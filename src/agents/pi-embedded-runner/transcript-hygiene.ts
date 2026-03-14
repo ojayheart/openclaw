@@ -425,7 +425,6 @@ export async function sanitizeSessionHistory(params: {
   const droppedThinking = policy.dropThinkingBlocks
     ? dropThinkingBlocks(sanitizedImages, {
         preserveLatestAssistantWithThinking: policy.preserveLatestAssistantWithThinking,
-        preserveLatestAssistant: !policy.preserveLatestAssistantWithThinking,
       })
     : sanitizedImages;
   const sanitizedToolCalls = sanitizeToolCallInputs(droppedThinking, {
