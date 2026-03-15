@@ -32,6 +32,7 @@ Docs: https://docs.openclaw.ai
 - Feishu/topic threads: fetch full thread context, including prior bot replies, when starting a topic-thread session so follow-up turns in Feishu topics keep the right conversation state. Thanks @Coobiw.
 - Browser/profiles: drop the auto-created `chrome-relay` browser profile; users who need the Chrome extension relay must now create their own profile via `openclaw browser create-profile`. (#45777) Thanks @odysseus0.
 - Docs/Mintlify: fix MDX marker syntax on Perplexity, Model Providers, Moonshot, and exec approvals pages so local docs preview no longer breaks rendering or leaves stale pages unpublished. (#46695) Thanks @velvet-shark.
+- ACP/approvals: use canonical tool identity for prompting decisions and fail closed when conflicting tool identity hints are present. Thanks @vincentkoc.
 
 ## 2026.3.13
 
